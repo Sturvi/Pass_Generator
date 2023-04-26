@@ -2,7 +2,6 @@ package org.example;
 
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
@@ -82,11 +81,9 @@ public class PasswordGenerator extends TelegramLongPollingBot {
     private void handleTextMessage (Message message){
         String messageText = message.getText();
 
-        Message newMessage = null;
-
         switch (messageText){
             case ("Сгенерировать пароль") -> {
-                newMessage = sendMessageToUser(message, generator(message.getChatId()), null);
+                sendMessageToUser(message, generator(message.getChatId()), null);
             }
             case ("Настройки") -> {
                 sendMessageToUser(message, "Выберите пожалуйста настройки для клавиатуры", getInlineKeyboard(message.getChatId()));
@@ -113,7 +110,7 @@ public class PasswordGenerator extends TelegramLongPollingBot {
         }
     }
 
-    private Message sendMessageToUser(Message message, String messageText, InlineKeyboardMarkup inlineKeyboardMarkup) {
+    private void sendMessageToUser(Message message, String messageText, InlineKeyboardMarkup inlineKeyboardMarkup) {
         SendMessage sendMessage = new SendMessage();
         sendMessage.setChatId(message.getChatId().toString());
         sendMessage.setText(messageText);
@@ -124,15 +121,11 @@ public class PasswordGenerator extends TelegramLongPollingBot {
             sendMessage.setReplyMarkup(inlineKeyboardMarkup);
         }
 
-        Message newMessage = null;
-
         try {
-            newMessage = execute(sendMessage);
+            execute(sendMessage);
         } catch (TelegramApiException e) {
             throw new RuntimeException(e);
         }
-
-        return newMessage;
     }
 
     private void keyboard (SendMessage sendMessage){
